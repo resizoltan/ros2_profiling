@@ -21,6 +21,7 @@ import mcap_ros2.reader
 import pandas as pd
 
 from ros2profile.data.convert.ctf import load_ctf
+from ros2profile.data.convert.ctf import write_events_to_pickle
 from ros2profile.data import build_graph
 
 
@@ -53,6 +54,7 @@ def process_io_stats(msg):
 def process_stat(msg):
     return {
         '_log_time': msg.log_time,
+        'num_threads': msg.ros_msg.num_threads
     }
 
 
@@ -128,6 +130,7 @@ def process(input_path):
 
     if not os.path.exists(os.path.join(input_path, 'event_graph')):
         events = load_ctf(input_path)
+        write_events_to_pickle(events, os.path.join(input_path, 'events'))
         graph = build_graph(events)
         with open(os.path.join(input_path, 'event_graph'), 'wb') as f:
             p = pickle.Pickler(f, protocol=4)
